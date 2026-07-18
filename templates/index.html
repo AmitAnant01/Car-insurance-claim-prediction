@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Insurance Claim Prediction</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Car Insurance Claim Prediction</h1>
+        <p class="subtitle">Enter policy and vehicle details to estimate claim risk</p>
+    </header>
+
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if result %}
+    <div class="result-card {{ 'result-positive' if result.claim_predicted else 'result-negative' }}">
+        <span class="result-label">
+            {{ "Likely to file a claim" if result.claim_predicted else "Unlikely to file a claim" }}
+        </span>
+        <span class="result-probability">
+            Claim probability: {{ "%.2f"|format(result.claim_probability * 100) }}%
+        </span>
+    </div>
+    {% endif %}
+
+    <form method="POST" class="predict-form">
+
+        <div class="form-section">
+            <h2>Policy Details</h2>
+            <div class="form-grid">
+                <label>Policy tenure
+                    <input type="number" step="0.01" name="policy_tenure" value="0.5" required>
+                </label>
+                <label>Age of car (years)
+                    <input type="number" step="0.01" name="age_of_car" value="1.0" required>
+                </label>
+                <label>Age of policyholder
+                    <input type="number" step="0.01" name="age_of_policyholder" value="0.5" required>
+                </label>
+                <label>Area cluster
+                    <select name="area_cluster">
+                        {% for c in ["C1","C2","C3","C4","C5","C6","C7","C8"] %}
+                        <option value="{{ c }}">{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Population density
+                    <input type="number" name="population_density" value="15000" required>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Vehicle Details</h2>
+            <div class="form-grid">
+                <label>Make
+                    <input type="number" name="make" value="1" required>
+                </label>
+                <label>Segment
+                    <select name="segment">
+                        {% for s in ["A","B1","B2","C1","C2","Utility"] %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Model
+                    <select name="model">
+                        {% for m in ["M1","M2","M3","M4","M5","M6","M7","M8","M9","M10","M11"] %}
+                        <option value="{{ m }}">{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Fuel type
+                    <select name="fuel_type">
+                        {% for f in ["Petrol","Diesel","CNG"] %}
+                        <option value="{{ f }}">{{ f }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Max torque
+                    <input type="text" name="max_torque" value="113Nm@4400rpm" required>
+                </label>
+                <label>Max power
+                    <input type="text" name="max_power" value="88.50bhp@6000rpm" required>
+                </label>
+                <label>Engine type
+                    <input type="text" name="engine_type" value="1.2 L K12N Dualjet" required>
+                </label>
+                <label>Airbags
+                    <input type="number" name="airbags" value="2" required>
+                </label>
+                <label>Rear brakes type
+                    <select name="rear_brakes_type">
+                        {% for r in ["Drum","Disc"] %}
+                        <option value="{{ r }}">{{ r }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Displacement
+                    <input type="number" name="displacement" value="1197" required>
+                </label>
+                <label>Cylinder
+                    <input type="number" name="cylinder" value="4" required>
+                </label>
+                <label>Transmission type
+                    <select name="transmission_type">
+                        {% for t in ["Manual","Automatic"] %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Gear box
+                    <input type="number" name="gear_box" value="5" required>
+                </label>
+                <label>Steering type
+                    <select name="steering_type">
+                        {% for s in ["Power","Electric","Manual"] %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>Turning radius
+                    <input type="number" step="0.1" name="turning_radius" value="5.0" required>
+                </label>
+                <label>Length (mm)
+                    <input type="number" name="length" value="3990" required>
+                </label>
+                <label>Width (mm)
+                    <input type="number" name="width" value="1680" required>
+                </label>
+                <label>Height (mm)
+                    <input type="number" name="height" value="1505" required>
+                </label>
+                <label>Gross weight (kg)
+                    <input type="number" name="gross_weight" value="1155" required>
+                </label>
+                <label>NCAP rating
+                    <input type="number" name="ncap_rating" value="0" required>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2>Safety and Comfort Features</h2>
+            <div class="form-grid form-grid-toggles">
+                {% set toggle_fields = [
+                    ("is_esc", "Electronic Stability Control"),
+                    ("is_adjustable_steering", "Adjustable Steering"),
+                    ("is_tpms", "Tyre Pressure Monitor"),
+                    ("is_parking_sensors", "Parking Sensors"),
+                    ("is_parking_camera", "Parking Camera"),
+                    ("is_front_fog_lights", "Front Fog Lights"),
+                    ("is_rear_window_wiper", "Rear Window Wiper"),
+                    ("is_rear_window_washer", "Rear Window Washer"),
+                    ("is_rear_window_defogger", "Rear Window Defogger"),
+                    ("is_brake_assist", "Brake Assist"),
+                    ("is_power_door_locks", "Power Door Locks"),
+                    ("is_central_locking", "Central Locking"),
+                    ("is_power_steering", "Power Steering"),
+                    ("is_driver_seat_height_adjustable", "Driver Seat Height Adjustable"),
+                    ("is_day_night_rear_view_mirror", "Day Night Rear View Mirror"),
+                    ("is_ecw", "Engine Check Warning"),
+                    ("is_speed_alert", "Speed Alert"),
+                ] %}
+                {% for field_name, label in toggle_fields %}
+                <label>{{ label }}
+                    <select name="{{ field_name }}">
+                        <option value="Yes">Yes</option>
+                        <option value="No" selected>No</option>
+                    </select>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="submit-btn">Predict Claim Risk</button>
+    </form>
+
+    <footer>
+        <p>Model trained on 58,592 policy records. For demonstration purposes only.</p>
+    </footer>
+</div>
+
+</body>
+</html>

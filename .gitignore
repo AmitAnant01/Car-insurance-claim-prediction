@@ -1,0 +1,16 @@
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# derived data splits, regenerate from data/train.csv via src/data_ingestion.py
+artifacts/train.csv
+artifacts/test.csv
+
+# os / editor
+.DS_Store
+.vscode/
+*.log
