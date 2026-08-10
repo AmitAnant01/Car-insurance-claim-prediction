@@ -1,9 +1,3 @@
-"""
-Data validation module.
-Checks that an incoming dataframe matches what the model expects
-before it goes anywhere near feature engineering or prediction.
-"""
-
 import pandas as pd
 
 from src.utils import get_logger
@@ -36,8 +30,6 @@ YES_NO_COLUMNS = [
 
 
 class DataValidation:
-    """Small rule based validator, no external schema library needed."""
-
     def __init__(self, expected_columns=None):
         self.expected_columns = expected_columns or EXPECTED_COLUMNS
 

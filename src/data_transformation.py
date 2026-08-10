@@ -1,15 +1,3 @@
-"""
-Data transformation module.
-Turns the raw columns into model ready features:
-- splits combined torque/power strings into numeric value + rpm
-- encodes Yes/No columns into 1/0
-- one hot encodes the remaining categorical columns
-- scales numeric columns
-
-The fitted encoder/scaler objects are saved to artifacts/ so the same
-transformation can be replayed on new data during prediction.
-"""
-
 import os
 import re
 
@@ -39,9 +27,6 @@ DROP_COLUMNS = ["policy_id", "max_torque", "max_power"]
 
 
 def _extract_torque_power(df: pd.DataFrame) -> pd.DataFrame:
-    """max_torque / max_power come as combined strings like '113Nm@4400rpm'.
-    Splitting them into two numeric columns gives the model more signal
-    than the raw string ever could."""
     df = df.copy()
 
     torque_split = df["max_torque"].str.extract(r"([\d.]+)Nm@([\d.]+)rpm")
@@ -111,7 +96,6 @@ class DataTransformation:
         return X_final, y
 
     def transform(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Apply an already fitted pipeline to new/unseen data."""
         if not self.fitted:
             raise RuntimeError("Call fit_transform before transform, or load artifacts")
 

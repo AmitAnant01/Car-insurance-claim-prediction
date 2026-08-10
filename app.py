@@ -1,10 +1,3 @@
-"""
-Flask app that serves the trained insurance claim model.
-Two ways to use it:
-  1. Web form at '/'          -> fill in vehicle/policy details, get a prediction
-  2. JSON API at '/api/predict' -> POST a single record or a list of records
-"""
-
 import os
 
 import pandas as pd
@@ -18,7 +11,6 @@ pipeline = None
 try:
     pipeline = PredictionPipeline(artifacts_dir="artifacts")
 except FileNotFoundError:
-    # artifacts not generated yet, /health will report this clearly
     pipeline = None
 
 FORM_FIELDS = [

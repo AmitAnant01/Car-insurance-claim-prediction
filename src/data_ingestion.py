@@ -1,9 +1,3 @@
-"""
-Data ingestion module.
-Reads the raw csv, does a basic sanity check and splits it into
-train and test sets that the rest of the pipeline can use.
-"""
-
 import os
 from dataclasses import dataclass
 

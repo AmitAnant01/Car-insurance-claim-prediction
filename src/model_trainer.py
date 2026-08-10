@@ -1,10 +1,3 @@
-"""
-Model training module.
-Trains a few candidate classifiers, compares them on the validation
-split using ROC-AUC (accuracy is misleading here since claims are
-only about 6% of the data) and saves the best one to artifacts/.
-"""
-
 import os
 
 from sklearn.linear_model import LogisticRegression
@@ -18,8 +11,6 @@ logger = get_logger(__name__)
 
 
 def get_candidate_models(scale_pos_weight: float) -> dict:
-    """class_weight / scale_pos_weight is used instead of resampling,
-    it works well here and keeps the pipeline simple."""
     return {
         "logistic_regression": LogisticRegression(
             max_iter=1000, class_weight="balanced", random_state=42

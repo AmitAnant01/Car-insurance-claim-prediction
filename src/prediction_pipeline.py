@@ -1,11 +1,3 @@
-"""
-Prediction pipeline.
-Loads the saved encoder, scaler and model, and exposes a single
-predict() method that app.py calls. Keeping this separate from
-training code means the Flask app does not need sklearn training
-imports at all.
-"""
-
 import os
 
 import pandas as pd
